@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.MASTERKEY }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -51,6 +52,6 @@ jobs:
           cp dist/* binaries/
           git add binaries
           git commit -m "Add compiled binaries [skip ci]" || echo "No changes to commit"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+          git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MASTERKEY }}
