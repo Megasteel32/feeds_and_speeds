@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -40,14 +42,15 @@ jobs:
           name: ${{ matrix.os }}-build
           path: dist/*
 
-      - name: Commit binaries
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Commit and Push Changes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p binaries
           cp dist/* binaries/
           git add binaries
-          git commit -m "Add compiled binaries [skip ci]"
-          git push
-        shell: bash
+          git commit -m "Add compiled binaries [skip ci]" || echo "No changes to commit"
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
