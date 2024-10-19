@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MASTERKEY }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -41,7 +43,7 @@ jobs:
           path: binaries/feeds_and_speeds
 
       - name: Set up GITHUB_TOKEN
-        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+        run: echo "GITHUB_TOKEN=${{ secrets.MASTERKEY }}" >> $GITHUB_ENV
 
       - name: Commit binaries
         run: |
@@ -49,4 +51,4 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add binaries
           git commit -m "Add compiled binaries"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push https://x-access-token:${{ secrets.MASTERKEY }}@github.com/${{ github.repository }}.git
