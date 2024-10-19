@@ -22,6 +22,17 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.MASTERKEY }}
+          repository: Megasteel32/feeds_and_speeds
+          ssh-strict: true
+          ssh-user: git
+          persist-credentials: true
+          clean: true
+          sparse-checkout-cone-mode: true
+          fetch-tags: false
+          show-progress: true
+          lfs: false
+          submodules: false
+          set-safe-directory: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
