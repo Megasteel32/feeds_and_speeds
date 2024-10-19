@@ -222,6 +222,7 @@ class CNCCalculatorGUI(QMainWindow):
 
         self.plunge_rate_guideline.setText(f"{plunge_rate} mm/min")
 
+
     def maximize_feedrate(self):
         try:
             flutes = float(self.flutes.text())
@@ -253,13 +254,17 @@ class CNCCalculatorGUI(QMainWindow):
             self.feedrate_result.setText(f"{max_feedrate:.0f}")
             self.update_guidelines(tool_diameter, max_feedrate)
 
-            if max_feedrate < 6000 and max_chipload >= upper_chipload:
+            # Check if we've reached the maximum suggested chipload
+            if abs(max_chipload - upper_chipload) < 0.0001:
                 response = QMessageBox.question(self, "Maximizer Result",
                                                 f"Maximum feedrate of {max_feedrate:.0f} mm/min achieved at maximum suggested chipload.\n"
                                                 f"Would you like to increase the RPM to the next step?",
                                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
                 if response == QMessageBox.StandardButton.Yes:
                     self.increase_rpm()
+            else:
+                QMessageBox.information(self, "Maximizer Result",
+                                        f"Maximum feedrate of {max_feedrate:.0f} mm/min achieved.")
 
         except ValueError:
             QMessageBox.critical(self, "Error", "Invalid input. Please enter valid numbers.")
@@ -271,6 +276,7 @@ class CNCCalculatorGUI(QMainWindow):
             self.maximize_feedrate()
         else:
             QMessageBox.information(self, "RPM Limit", "Already at maximum RPM.")
+
 
 
 if __name__ == "__main__":
