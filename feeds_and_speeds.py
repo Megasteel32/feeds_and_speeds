@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import math
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -278,9 +280,12 @@ class CNCCalculatorGUI(QMainWindow):
             QMessageBox.information(self, "RPM Limit", "Already at maximum RPM.")
 
 
-
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
     window = CNCCalculatorGUI()
     window.show()
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
