@@ -34,15 +34,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller PyQt6
 
+      - name: Set binary name
+        id: set-binary-name
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            echo "BINARY_NAME=feeds_and_speeds_windows.exe" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            echo "BINARY_NAME=feeds_and_speeds_macos" >> $GITHUB_OUTPUT
+          else
+            echo "BINARY_NAME=feeds_and_speeds_linux" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile feeds_and_speeds.py
+          pyinstaller --onefile --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-build
-          path: dist/*
+          name: ${{ steps.set-binary-name.outputs.BINARY_NAME }}
+          path: dist/${{ steps.set-binary-name.outputs.BINARY_NAME }}
 
       - name: Commit and push binaries
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -51,7 +62,7 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git pull origin main
           mkdir -p binaries
-          cp dist/* binaries/
+          cp dist/${{ steps.set-binary-name.outputs.BINARY_NAME }} binaries/
           git add binaries
-          git commit -m "Add compiled binaries for ${{ matrix.os }} [skip ci]" || echo "No changes to commit"
+          git commit -m "Add compiled binary for ${{ matrix.os }}: ${{ steps.set-binary-name.outputs.BINARY_NAME }} [skip ci]" || echo "No changes to commit"
           git push || (git pull --rebase origin main && git push)
