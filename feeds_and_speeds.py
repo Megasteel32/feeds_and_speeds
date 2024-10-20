@@ -7,7 +7,8 @@ import os
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QLabel, QLineEdit, QComboBox, QPushButton, QGroupBox,
                              QMessageBox, QGridLayout)
-from PyQt6.QtGui import QDoubleValidator
+from PyQt6.QtGui import QDoubleValidator, QFont
+from PyQt6.QtCore import Qt
 
 
 def calculate_feedrate(flutes, rpm, chipload, woc, tool_diameter):
@@ -76,22 +77,17 @@ def suggest_chipload(tool_diameter, material_type):
         return interpolated_lower, interpolated_upper
 
 
-def create_output(layout, label):
-    output_layout = QHBoxLayout()
-    label_widget = QLabel(label)
-    output_layout.addWidget(label_widget)
-    output_widget = QLineEdit()
-    output_widget.setReadOnly(True)
-    output_layout.addWidget(output_widget)
-    layout.addLayout(output_layout)
-    return output_widget
-
-
 class CNCCalculatorGUI(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("CNC Milling Calculator")
-        self.setGeometry(100, 100, 600, 400)
+        self.setGeometry(200, 200, 600, 400)  # Increased window size
+
+        # Set a larger base font for the entire application
+        app = QApplication.instance()
+        font = app.font()
+        font.setPointSize(16)  # Increased font size
+        app.setFont(font)
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
@@ -112,6 +108,7 @@ class CNCCalculatorGUI(QMainWindow):
         self.rpm_combo.addItems(["11000", "13500", "18250", "24500", "29250", "31000"])
         self.rpm_combo.setCurrentText("18250")
         self.rpm_combo.currentTextChanged.connect(self.update_chipload_suggestion)
+        self.rpm_combo.setMinimumHeight(30)  # Increased height
         input_layout.addWidget(self.rpm_combo, 2, 1)
 
         self.woc = self.create_input(input_layout, "Width of cut (WOC) (mm):", 6.35, 3, 0)
@@ -122,15 +119,18 @@ class CNCCalculatorGUI(QMainWindow):
         self.material_combo = QComboBox()
         self.material_combo.addItems(["Soft plastics", "Soft wood & hard plastics", "Hard wood & aluminium"])
         self.material_combo.currentTextChanged.connect(self.update_chipload_suggestion)
+        self.material_combo.setMinimumHeight(30)  # Increased height
         input_layout.addWidget(self.material_combo, 5, 1)
 
         self.cutting_style_label = QLabel("Cutting style:")
         input_layout.addWidget(self.cutting_style_label, 6, 0)
         self.cutting_style_combo = QComboBox()
         self.cutting_style_combo.addItems(["Wide and Shallow", "Narrow and Deep"])
+        self.cutting_style_combo.setMinimumHeight(30)  # Increased height
         input_layout.addWidget(self.cutting_style_combo, 6, 1)
 
         self.chipload_suggestion = QLabel()
+        self.chipload_suggestion.setWordWrap(True)  # Allow text wrapping
         input_layout.addWidget(self.chipload_suggestion, 7, 0, 1, 2)
 
         self.chipload = self.create_input(input_layout, "Target total chipload (mm):", 0.0254, 8, 0)
@@ -138,10 +138,12 @@ class CNCCalculatorGUI(QMainWindow):
         button_layout = QHBoxLayout()
         calculate_button = QPushButton("Calculate")
         calculate_button.clicked.connect(self.calculate)
+        calculate_button.setMinimumHeight(35)  # Increased height
         button_layout.addWidget(calculate_button)
 
         maximize_button = QPushButton("Maximize Feedrate")
         maximize_button.clicked.connect(self.maximize_feedrate)
+        maximize_button.setMinimumHeight(35)  # Increased height
         button_layout.addWidget(maximize_button)
 
         input_layout.addLayout(button_layout, 9, 0, 1, 2)
@@ -151,12 +153,13 @@ class CNCCalculatorGUI(QMainWindow):
         results_group.setLayout(results_layout)
         main_layout.addWidget(results_group)
 
-        self.feedrate_result = create_output(results_layout, "Required feedrate (mm/min):")
-        self.woc_guideline = create_output(results_layout, "WOC guideline (mm):")
-        self.doc_guideline = create_output(results_layout, "DOC guideline (mm):")
-        self.plunge_rate_guideline = create_output(results_layout, "Plunge rate guideline (mm/min):")
+        self.feedrate_result = self.create_output(results_layout, "Required feedrate (mm/min):")
+        self.woc_guideline = self.create_output(results_layout, "WOC guideline (mm):")
+        self.doc_guideline = self.create_output(results_layout, "DOC guideline (mm):")
+        self.plunge_rate_guideline = self.create_output(results_layout, "Plunge rate guideline (mm/min):")
         self.warning_label = QLabel()
-        self.warning_label.setStyleSheet("color: red;")
+        self.warning_label.setStyleSheet("color: red; font-weight: bold;")
+        self.warning_label.setWordWrap(True)  # Allow text wrapping
         results_layout.addWidget(self.warning_label)
 
         self.update_chipload_suggestion()
@@ -167,8 +170,20 @@ class CNCCalculatorGUI(QMainWindow):
         input_widget = QLineEdit(str(default))
         input_widget.setValidator(QDoubleValidator())
         input_widget.textChanged.connect(self.update_chipload_suggestion)
+        input_widget.setMinimumHeight(30)  # Increased height
         layout.addWidget(input_widget, row, col + 1)
         return input_widget
+
+    def create_output(self, layout, label):
+        output_layout = QHBoxLayout()
+        label_widget = QLabel(label)
+        output_layout.addWidget(label_widget)
+        output_widget = QLineEdit()
+        output_widget.setReadOnly(True)
+        output_widget.setMinimumHeight(30)  # Increased height
+        output_layout.addWidget(output_widget)
+        layout.addLayout(output_layout)
+        return output_widget
 
     def update_chipload_suggestion(self):
         try:
@@ -225,7 +240,6 @@ class CNCCalculatorGUI(QMainWindow):
             plunge_rate = f"{feedrate * 0.4:.0f} to {feedrate * 0.5:.0f}"
 
         self.plunge_rate_guideline.setText(f"{plunge_rate} mm/min")
-
 
     def maximize_feedrate(self):
         try:
