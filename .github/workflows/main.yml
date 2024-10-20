@@ -42,10 +42,10 @@ jobs:
           fi
       - name: Build with PyInstaller
         run: |
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
             pyinstaller --onefile --windowed --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
           else
-            pyinstaller --onefile --noconsole --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
+            pyinstaller --onefile --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
           fi
       - name: Upload artifact
         uses: actions/upload-artifact@v4
