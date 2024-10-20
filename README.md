@@ -1,6 +1,6 @@
 # Feeds and Speeds Calculator
 
-This project is a CNC milling calculator that helps you determine the optimal feedrate, width of cut (WOC) and depth of cut (DOC) for your CNC milling operations. The calculator is implemented as a Python script using PyQt6 for the GUI.
+This is a CNC milling calculator that helps you determine the optimal feedrate, width of cut (WOC) and depth of cut (DOC) for your CNC milling operations. The calculator is implemented as a Python script using PyQt6 for the GUI.
 
 ## Running the Source Code
 
