@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -17,23 +16,19 @@ jobs:
       fail-fast: false
     permissions:
       contents: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller PyQt6
-
       - name: Set binary name
         id: set-binary-name
         shell: bash
@@ -45,17 +40,18 @@ jobs:
           else
             echo "BINARY_NAME=feeds_and_speeds_linux" >> $GITHUB_OUTPUT
           fi
-
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --noconsole --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
-
+          if [ "${{ matrix.os }}" == "macos-latest" ]; then
+            pyinstaller --onefile --windowed --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
+          else
+            pyinstaller --onefile --noconsole --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
+          fi
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.set-binary-name.outputs.BINARY_NAME }}
           path: dist/${{ steps.set-binary-name.outputs.BINARY_NAME }}
-
       - name: Commit and push binaries
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
