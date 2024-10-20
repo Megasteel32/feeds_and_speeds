@@ -5,12 +5,13 @@ on:
       - main
     paths:
       - 'feeds_and_speeds.py'
+    tags:
+      - '*'
   pull_request:
     branches:
       - main
     paths:
       - 'feeds_and_speeds.py'
-  tags: '*'
 
 jobs:
   build:
