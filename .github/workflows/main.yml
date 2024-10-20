@@ -40,13 +40,14 @@ jobs:
           else
             echo "BINARY_NAME=feeds_and_speeds_linux" >> $GITHUB_OUTPUT
           fi
-      - name: Build with PyInstaller
+      - name: Build with PyInstaller (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            pyinstaller --onefile --windowed --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
-          else
-            pyinstaller --onefile --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
-          fi
+          pyinstaller --onefile --windowed --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
+      - name: Build with PyInstaller (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          pyinstaller --onefile --name ${{ steps.set-binary-name.outputs.BINARY_NAME }} feeds_and_speeds.py
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
