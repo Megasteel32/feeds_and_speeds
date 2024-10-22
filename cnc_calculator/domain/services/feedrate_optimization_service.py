@@ -5,11 +5,8 @@ class FeedrateOptimizationService:
         self.parameters = parameters
 
     def maximize_feedrate(self, max_feedrate: float, chipload_increment: float) -> tuple[float, float]:
-        tool_diameter = self.parameters.tool_diameter
-        if isinstance(tool_diameter, float):
-            lower_chipload, upper_chipload = self.parameters.material.chiploads[tool_diameter]
-        else:
-            lower_chipload, upper_chipload = self.parameters.material.chiploads[tool_diameter.value]
+        tool_diameter = self.parameters.tool_diameter.value
+        lower_chipload, upper_chipload = self.parameters.material.chiploads[tool_diameter]
         
         current_chipload = lower_chipload
         max_feedrate = 0
