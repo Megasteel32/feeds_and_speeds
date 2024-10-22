@@ -59,11 +59,6 @@ class CNCCalculatorViewModel:
             'warning': feedrate > 6000
         }
 
-    def maximize_feedrate(self, max_feedrate: float, chipload_increment: float) -> Dict[str, Any]:
+    def maximize_feedrate(self, max_feedrate: float, chipload_increment: float) -> tuple[float, float]:
         maximize_feedrate_use_case = MaximizeFeedrateUseCase(self.parameters)
-        max_feedrate, max_chipload = maximize_feedrate_use_case.execute(max_feedrate, chipload_increment)
-
-        return {
-            'max_feedrate': max_feedrate,
-            'max_chipload': max_chipload
-        }
+        return maximize_feedrate_use_case.execute(max_feedrate, chipload_increment)
