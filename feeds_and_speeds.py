@@ -249,31 +249,40 @@ class CNCCalculatorGUI(QMainWindow):
             woc = float(self.woc.text())
             material = self.material_combo.currentText()
 
+            # Get per-flute chipload range
             lower_chipload, upper_chipload = suggest_chipload(tool_diameter, material)
-            current_chipload = lower_chipload
-            max_feedrate = 0
-            max_chipload = current_chipload
 
-            while current_chipload <= upper_chipload:
-                feedrate = calculate_feedrate(flutes, rpm, current_chipload, woc, tool_diameter)
+            # Convert to total chipload range
+            lower_total_chipload = lower_chipload * flutes
+            upper_total_chipload = upper_chipload * flutes
+
+            current_total_chipload = lower_total_chipload
+            max_feedrate = 0
+            max_total_chipload = current_total_chipload
+
+            while current_total_chipload <= upper_total_chipload:
+                # Convert total chipload back to per-flute for feedrate calculation
+                per_flute_chipload = current_total_chipload / flutes
+                feedrate = calculate_feedrate(flutes, rpm, per_flute_chipload, woc, tool_diameter)
+
                 if max_feedrate < feedrate <= 6000:
                     max_feedrate = feedrate
-                    max_chipload = current_chipload
+                    max_total_chipload = current_total_chipload
                 elif feedrate > 6000:
                     break
-                current_chipload += 0.0001
+                current_total_chipload += 0.0001
 
             if max_feedrate == 0:
                 QMessageBox.information(self, "Maximizer Result",
                                         "Unable to find a valid feedrate. Please check your inputs.")
                 return
 
-            self.chipload.setText(f"{max_chipload:.4f}")
+            self.chipload.setText(f"{max_total_chipload:.4f}")
             self.feedrate_result.setText(f"{max_feedrate:.0f}")
             self.update_guidelines(tool_diameter, max_feedrate)
 
-            # Check if we've reached the maximum suggested chipload
-            if abs(max_chipload - upper_chipload) < 0.0001:
+            # Check if we've reached the maximum suggested total chipload
+            if abs(max_total_chipload - upper_total_chipload) < 0.0001:
                 response = QMessageBox.question(self, "Maximizer Result",
                                                 f"Maximum feedrate of {max_feedrate:.0f} mm/min achieved at maximum suggested chipload.\n"
                                                 f"Would you like to increase the RPM to the next step?",
@@ -283,6 +292,9 @@ class CNCCalculatorGUI(QMainWindow):
             else:
                 QMessageBox.information(self, "Maximizer Result",
                                         f"Maximum feedrate of {max_feedrate:.0f} mm/min achieved.")
+
+        except ValueError:
+            QMessageBox.critical(self, "Error", "Invalid input. Please enter valid numbers.")
 
         except ValueError:
             QMessageBox.critical(self, "Error", "Invalid input. Please enter valid numbers.")
