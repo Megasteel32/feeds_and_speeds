@@ -165,7 +165,7 @@ class CNCCalculatorGUI(QMainWindow):
 
     def update_chipload_suggestion(self):
         try:
-            lower, upper = self.view_model.calculator.suggest_chipload()
+            lower, upper = self.view_model.calculator.suggest_chipload(self.view_model.parameters.tool_diameter)
             flutes = float(self.inputs['flutes'].text())
             suggestion_text = (
                 f"Suggested chipload range:\n"
@@ -207,7 +207,7 @@ class CNCCalculatorGUI(QMainWindow):
             self.calculate()
 
             # Check if we should suggest increasing RPM
-            lower_chipload, upper_chipload = self.view_model.calculator.suggest_chipload()
+            lower_chipload, upper_chipload = self.view_model.calculator.suggest_chipload(self.view_model.parameters.tool_diameter)
             if abs(max_chipload - upper_chipload) < 0.0001:
                 self.suggest_rpm_increase(max_feedrate)
 
