@@ -4,8 +4,10 @@ from ..models.material import Material
 class ChiploadCalculationService:
     def __init__(self, material: Material):
         self.material = material
+        self.tool_diameter = None
 
     def suggest_chipload(self, tool_diameter: float) -> Tuple[float, float]:
+        self.tool_diameter = tool_diameter
         chipload_data = self.material.chiploads
         diameters = sorted(chipload_data.keys())
 
