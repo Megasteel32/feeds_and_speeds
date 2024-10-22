@@ -1,6 +1,7 @@
 from typing import Optional
 from .material import Material
 from .cutting_style import CuttingStyle
+import math
 
 class CuttingParameters:
     def __init__(self, flutes: int, tool_diameter: float, rpm: int, woc: float, doc: float, material: Material, cutting_style: CuttingStyle, chipload: Optional[float] = None):
@@ -14,7 +15,7 @@ class CuttingParameters:
         self.chipload = chipload
 
     def calculate_feedrate(self) -> float:
-        base_feedrate = self.rpm * self.chipload * self.flutes
+        base_feedrate = self.rpm.value * self.chipload * self.flutes
         if self.woc > self.tool_diameter / 2:
             return base_feedrate
         return base_feedrate / math.sqrt(1 - (1 - 2 * self.woc / self.tool_diameter) ** 2)
