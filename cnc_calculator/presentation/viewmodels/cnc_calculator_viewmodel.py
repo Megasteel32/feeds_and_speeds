@@ -16,7 +16,7 @@ class CNCCalculatorViewModel:
         self.cutting_style_repository = CuttingStyleRepository()
         self.parameters = CuttingParameters(
             flutes=1,
-            tool_diameter=6.35,
+            tool_diameter=Distance(6.35),
             rpm=RPM(18250),
             woc=Distance(6.35),
             doc=Distance(0.254),
@@ -29,7 +29,7 @@ class CNCCalculatorViewModel:
         if parameter == 'flutes':
             self.parameters.flutes = int(value)
         elif parameter == 'tool_diameter':
-            self.parameters.tool_diameter = float(value)
+            self.parameters.tool_diameter = Distance(float(value))
         elif parameter == 'rpm':
             self.parameters.rpm = RPM(float(value))
         elif parameter == 'woc':
