@@ -7,6 +7,7 @@ from cnc_calculator.domain.models.cutting_style import CuttingStyle
 from cnc_calculator.domain.value_objects.measurements import RPM, Feedrate, Distance
 from cnc_calculator.infrastructure.persistence.material_repository import MaterialRepository
 from cnc_calculator.infrastructure.persistence.cutting_style_repository import CuttingStyleRepository
+from cnc_calculator.domain.services.chipload_calculation_service import ChiploadCalculationService
 from typing import Dict, Any
 
 class CNCCalculatorViewModel:
@@ -22,6 +23,7 @@ class CNCCalculatorViewModel:
             material=self.material_repository.get_material("Soft plastics"),
             cutting_style=self.cutting_style_repository.get_cutting_style("Wide and Shallow")
         )
+        self.calculator = ChiploadCalculationService(self.parameters.material)
 
     def update_parameter(self, parameter: str, value: Any):
         if parameter == 'flutes':
@@ -36,6 +38,7 @@ class CNCCalculatorViewModel:
             self.parameters.doc = Distance(float(value))
         elif parameter == 'material':
             self.parameters.material = self.material_repository.get_material(value)
+            self.calculator = ChiploadCalculationService(self.parameters.material)
         elif parameter == 'cutting_style':
             self.parameters.cutting_style = self.cutting_style_repository.get_cutting_style(value)
         elif parameter == 'chipload':
