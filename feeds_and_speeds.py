@@ -105,8 +105,8 @@ class CNCCalculatorGUI(QMainWindow):
         self.rpm_label = QLabel("RPM:")
         input_layout.addWidget(self.rpm_label, 2, 0)
         self.rpm_combo = QComboBox()
-        self.rpm_combo.addItems(["11000", "13500", "18250", "24500", "29250", "31000"])
-        self.rpm_combo.setCurrentText("18250")
+        self.rpm_combo.addItems(["10000", "14000", "18000", "23000", "27000", "32000"])
+        self.rpm_combo.setCurrentText("18000")
         self.rpm_combo.currentTextChanged.connect(self.update_chipload_suggestion)
         self.rpm_combo.setMinimumHeight(30)  # Increased height
         input_layout.addWidget(self.rpm_combo, 2, 1)
