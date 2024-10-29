@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QH
 from PyQt6.QtGui import QDoubleValidator, QFont
 from PyQt6.QtCore import Qt
 
+MAXIMUM_FEEDRATE = 10_000
 
 def calculate_feedrate(flutes, rpm, chipload, woc, tool_diameter):
     base_feedrate = rpm * chipload * flutes
@@ -209,8 +210,8 @@ class CNCCalculatorGUI(QMainWindow):
             feedrate = calculate_feedrate(flutes, rpm, chipload, woc, tool_diameter)
             self.feedrate_result.setText(f"{feedrate:.0f}")
 
-            if feedrate > 6000:
-                self.warning_label.setText("Warning: Calculated feedrate exceeds 6000 mm/min")
+            if feedrate > MAXIMUM_FEEDRATE:
+                self.warning_label.setText(f"Warning: Calculated feedrate exceeds {MAXIMUM_FEEDRATE} mm/min")
             else:
                 self.warning_label.setText("")
 
@@ -265,10 +266,10 @@ class CNCCalculatorGUI(QMainWindow):
                 per_flute_chipload = current_total_chipload / flutes
                 feedrate = calculate_feedrate(flutes, rpm, per_flute_chipload, woc, tool_diameter)
 
-                if max_feedrate < feedrate <= 6000:
+                if max_feedrate < feedrate <= MAXIMUM_FEEDRATE:
                     max_feedrate = feedrate
                     max_total_chipload = current_total_chipload
-                elif feedrate > 6000:
+                elif feedrate > MAXIMUM_FEEDRATE:
                     break
                 current_total_chipload += 0.0001
 
