@@ -12,8 +12,8 @@ from PyQt6.QtCore import Qt
 
 MAXIMUM_FEEDRATE = 10_000
 
-def calculate_feedrate(flutes, rpm, chipload, woc, tool_diameter):
-    base_feedrate = rpm * chipload * flutes
+def calculate_feedrate(flutes, rpm, chipload_per_flute, woc, tool_diameter):
+    base_feedrate = rpm * chipload_per_flute * flutes
     if woc > tool_diameter / 2:
         return base_feedrate
     else:
@@ -205,9 +205,12 @@ class CNCCalculatorGUI(QMainWindow):
             rpm = float(self.rpm_combo.currentText())
             woc = float(self.woc.text())
             float(self.doc.text())
-            chipload = float(self.chipload.text())
+            total_chipload = float(self.chipload.text())
 
-            feedrate = calculate_feedrate(flutes, rpm, chipload, woc, tool_diameter)
+            # Convert total chipload to per-flute chipload
+            chipload_per_flute = total_chipload / flutes
+
+            feedrate = calculate_feedrate(flutes, rpm, chipload_per_flute, woc, tool_diameter)
             self.feedrate_result.setText(f"{feedrate:.0f}")
 
             if feedrate > MAXIMUM_FEEDRATE:
